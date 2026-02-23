@@ -321,7 +321,7 @@ function App() {
       {/* Outro */}
       <section className="outro">
         <h1>Unleash The Beast Within</h1>
-        <button className="buy-now">Buy Now <span className="arrow">&#8599;</span></button>
+        <a href="https://weabers.com" target="_blank" rel="noopener noreferrer" className="buy-now">Buy Now <span className="arrow">&#8599;</span></a>
       </section>
     </div>
   )
