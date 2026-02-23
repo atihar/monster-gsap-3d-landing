@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
+const TILT_ANGLE = THREE.MathUtils.degToRad(-25)
 
 function ShakerModel({ scrollProgress }) {
   const { scene } = useGLTF('/shaker.glb')
@@ -27,6 +28,7 @@ function ShakerModel({ scrollProgress }) {
     const size = box.getSize(new THREE.Vector3())
     const center = box.getCenter(new THREE.Vector3())
 
+    // Offset inner group so model center sits at spin pivot (0,0,0)
     centerRef.current.position.set(-center.x, -center.y, -center.z)
 
     const isMobile = window.innerWidth < 1000
@@ -37,11 +39,11 @@ function ShakerModel({ scrollProgress }) {
 
   useFrame(() => {
     const p = scrollProgress.current
-    // Outer group: tilt on Z (applies first, tilts the whole thing)
+    // Outer group: tilt on Z over first 10% of scroll
     if (tiltRef.current) {
-      tiltRef.current.rotation.z = Math.min(1, p / 0.1) * THREE.MathUtils.degToRad(-25)
+      tiltRef.current.rotation.z = Math.min(1, p / 0.1) * TILT_ANGLE
     }
-    // Inner group: spin on Y (rotates around the model's own tilted axis)
+    // Inner group: spin on Y (model's own axis)
     if (spinRef.current) {
       spinRef.current.rotation.y = Math.PI * 4 * p
     }
@@ -71,7 +73,7 @@ function PlaceholderModel({ scrollProgress }) {
   useFrame(() => {
     const p = scrollProgress.current
     if (tiltRef.current) {
-      tiltRef.current.rotation.z = Math.min(1, p / 0.1) * THREE.MathUtils.degToRad(-25)
+      tiltRef.current.rotation.z = Math.min(1, p / 0.1) * TILT_ANGLE
     }
     if (spinRef.current) {
       spinRef.current.rotation.y = Math.PI * 4 * p
@@ -82,7 +84,7 @@ function PlaceholderModel({ scrollProgress }) {
 
   return (
     <group ref={tiltRef}>
-    <group ref={spinRef}>
+      <group ref={spinRef}>
         <mesh position={[0, 0 - cy, 0]}>
           <cylinderGeometry args={[0.45, 0.4, 1.6, 32]} />
           <meshStandardMaterial color="#1a1a2e" metalness={0.05} roughness={0.9} />

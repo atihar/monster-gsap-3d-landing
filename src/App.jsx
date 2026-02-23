@@ -30,6 +30,40 @@ function App() {
 
     // Wait for DOM
     const ctx = gsap.context(() => {
+      // Hero split text slide-up
+      gsap.fromTo('.hero-char > span',
+        { y: '100%' },
+        { y: '0%', duration: 1, ease: 'power3.out', stagger: 0.03, delay: 0.2 }
+      )
+      // Hero other elements fade in
+      const heroOther = [
+        { el: '.hero-content p', y: 40 },
+        { el: '.hero-cta', y: 30 },
+        { el: '.hero-bottom', y: 0 },
+        { el: '.hero-nav', y: -20 },
+      ]
+      heroOther.forEach(({ el, y }, i) => {
+        gsap.fromTo(el,
+          { y, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1, ease: 'power3.out', delay: 0.6 + 0.15 * i, clearProps: 'all' }
+        )
+      })
+
+      // Model slides from right (hero) to center (product-overview)
+      gsap.set('.model-container', { left: '25%' })
+      ScrollTrigger.create({
+        trigger: '.intro',
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+        onUpdate: ({ progress }) => {
+          // Start offset 25% right, end at 0% (centered)
+          const offset = 25 * (1 - progress)
+          gsap.set('.model-container', { left: `${offset}%` })
+        },
+      })
+
+
       // Header 1 character reveal on enter
       const charSpans = document.querySelectorAll('.header-1 h1 .char > span')
       ScrollTrigger.create({
@@ -106,7 +140,10 @@ function App() {
               : progress > 0.45
               ? -100
               : 100 - 200 * h2Progress
-          gsap.to('.header-2', { xPercent: header2XPercent })
+          gsap.set('.header-2', {
+            xPercent: header2XPercent,
+            opacity: progress >= 0.15 ? 1 : 0,
+          })
           gsap.to('.circular-mask', {
             clipPath: `circle(${maskSize}% at 50% 50%)`,
           })
@@ -128,7 +165,6 @@ function App() {
             })
           })
 
-          // Model rotation (handled in Scene via scrollProgress ref)
         },
       })
     })
@@ -141,9 +177,53 @@ function App() {
 
   return (
     <div className="app">
-      {/* Intro */}
+      {/* Intro / Hero */}
       <section className="intro">
-        <h1>Unleash The Beast.</h1>
+        <svg className="hero-wave" viewBox="0 0 1440 320" preserveAspectRatio="none">
+          <path
+            fill="none"
+            stroke="#95D600"
+            strokeWidth="2"
+            d="M0,160 C180,80 360,240 540,160 C720,80 900,240 1080,160 C1260,80 1440,240 1440,160"
+          />
+          <path
+            fill="none"
+            stroke="#95D600"
+            strokeWidth="1.5"
+            opacity="0.4"
+            d="M0,200 C180,120 360,280 540,200 C720,120 900,280 1080,200 C1260,120 1440,280 1440,200"
+          />
+          <path
+            fill="none"
+            stroke="#95D600"
+            strokeWidth="1"
+            opacity="0.2"
+            d="M0,120 C180,40 360,200 540,120 C720,40 900,200 1080,120 C1260,40 1440,200 1440,120"
+          />
+        </svg>
+        <nav className="hero-nav">
+          <span className="hero-logo">monster energy</span>
+          <span className="hero-menu">&#9776;</span>
+        </nav>
+        <div className="hero-content">
+          <h1>
+            {['unleash', 'the beast'].map((word, wi) => (
+              <span key={wi} className="hero-line">
+                {word.split('').map((char, ci) => (
+                  <span key={ci} className="hero-char">
+                    <span>{char === ' ' ? '\u00A0' : char}</span>
+                  </span>
+                ))}
+              </span>
+            ))}
+          </h1>
+          <p>Tear into a can of the meanest energy drink on the planet. Monster Energy — fuel your ambition, power your day.</p>
+          <button className="hero-cta">Shop Monster <span className="arrow">&#8599;</span></button>
+        </div>
+        <div className="hero-bottom">
+          <span className="hero-tags">explosive energy &bull; bold flavor &bull; zero compromise</span>
+          <span className="hero-scroll">scroll down ——— 0%</span>
+        </div>
       </section>
 
       {/* Product Overview - pinned */}
@@ -225,21 +305,23 @@ function App() {
           </div>
         </div>
 
-        {/* 3D Model */}
-        <div className="model-container">
-          <Canvas
-            camera={{ fov: 60, near: 0.1, far: 1000 }}
-            gl={{ antialias: true, alpha: true }}
-            style={{ background: 'transparent' }}
-          >
-            <Scene scrollProgress={scrollProgress} useGlb={hasGlb} />
-          </Canvas>
-        </div>
       </section>
+
+      {/* 3D Model - fixed overlay */}
+      <div className="model-container">
+        <Canvas
+          camera={{ fov: 60, near: 0.1, far: 1000 }}
+          gl={{ antialias: true, alpha: true }}
+          style={{ background: 'transparent' }}
+        >
+          <Scene scrollProgress={scrollProgress} useGlb={hasGlb} />
+        </Canvas>
+      </div>
 
       {/* Outro */}
       <section className="outro">
         <h1>Unleash The Beast Within</h1>
+        <button className="buy-now">Buy Now <span className="arrow">&#8599;</span></button>
       </section>
     </div>
   )
