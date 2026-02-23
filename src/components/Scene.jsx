@@ -3,15 +3,17 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 
-const TILT = THREE.MathUtils.degToRad(-25)
+const TILT_ANGLE = THREE.MathUtils.degToRad(-25)
 
 function ShakerModel({ scrollProgress }) {
   const { scene } = useGLTF('/shaker.glb')
+  const tiltRef = useRef()
   const spinRef = useRef()
+  const centerRef = useRef()
   const { camera } = useThree()
 
   useEffect(() => {
-    if (!scene) return
+    if (!scene || !centerRef.current) return
 
     scene.traverse((node) => {
       if (node.isMesh && node.material) {
@@ -26,31 +28,40 @@ function ShakerModel({ scrollProgress }) {
     const size = box.getSize(new THREE.Vector3())
     const center = box.getCenter(new THREE.Vector3())
 
-    // Center model geometry at origin
-    scene.position.set(-center.x, -center.y, -center.z)
+    // Offset inner group so model center sits at spin pivot (0,0,0)
+    centerRef.current.position.set(-center.x, -center.y, -center.z)
 
     const isMobile = window.innerWidth < 1000
-    const cameraDistance = isMobile ? 2 : 1.25
+    const cameraDistance = isMobile ? 2.5 : 1.6
     camera.position.set(0, 0, Math.max(size.x, size.y, size.z) * cameraDistance)
     camera.lookAt(0, 0, 0)
   }, [scene, camera])
 
   useFrame(() => {
-    if (!spinRef.current || scrollProgress.current < 0.05) return
-    const t = (scrollProgress.current - 0.05) / 0.95
-    spinRef.current.rotation.y = Math.PI * 12 * t
+    const p = scrollProgress.current
+    // Outer group: tilt on Z over first 10% of scroll
+    if (tiltRef.current) {
+      tiltRef.current.rotation.z = Math.min(1, p / 0.1) * TILT_ANGLE
+    }
+    // Inner group: spin on Y (model's own axis)
+    if (spinRef.current) {
+      spinRef.current.rotation.y = Math.PI * 4 * p
+    }
   })
 
   return (
-    <group rotation={[0, 0, TILT]}>
+    <group ref={tiltRef}>
       <group ref={spinRef}>
-        <primitive object={scene} />
+        <group ref={centerRef}>
+          <primitive object={scene} />
+        </group>
       </group>
     </group>
   )
 }
 
 function PlaceholderModel({ scrollProgress }) {
+  const tiltRef = useRef()
   const spinRef = useRef()
   const { camera } = useThree()
 
@@ -60,17 +71,19 @@ function PlaceholderModel({ scrollProgress }) {
   }, [camera])
 
   useFrame(() => {
-    if (!spinRef.current || scrollProgress.current < 0.05) return
-    const t = (scrollProgress.current - 0.05) / 0.95
-    // Pure Y rotation only — nothing else changes
-    spinRef.current.rotation.y = Math.PI * 12 * t
+    const p = scrollProgress.current
+    if (tiltRef.current) {
+      tiltRef.current.rotation.z = Math.min(1, p / 0.1) * TILT_ANGLE
+    }
+    if (spinRef.current) {
+      spinRef.current.rotation.y = Math.PI * 4 * p
+    }
   })
 
-  // All meshes centered at origin (visual center = 0)
-  const cy = 0.175 // vertical center offset
+  const cy = 0.175
 
   return (
-    <group rotation={[0, 0, TILT]}>
+    <group ref={tiltRef}>
       <group ref={spinRef}>
         <mesh position={[0, 0 - cy, 0]}>
           <cylinderGeometry args={[0.45, 0.4, 1.6, 32]} />
