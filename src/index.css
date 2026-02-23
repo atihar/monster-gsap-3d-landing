@@ -1,0 +1,31 @@
+@import url("https://fonts.cdnfonts.com/css/pp-neue-montreal");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "PP Neue Montreal", system-ui, -apple-system, sans-serif;
+  background-color: #0d0d0d;
+  color: #e0dfdf;
+  overflow-x: hidden;
+}
+
+h1 {
+  font-size: 4rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+h2 {
+  font-size: 3rem;
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
