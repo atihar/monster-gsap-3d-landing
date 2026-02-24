@@ -1,16 +1,63 @@
-# React + Vite
+# Monster 3D Landing
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive 3D landing page featuring a monster shaker model with smooth scroll-driven animations. Built with React, Three.js, and GSAP.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **React 19** — UI framework
+- **Three.js / React Three Fiber** — 3D rendering
+- **React Three Drei** — Three.js helpers and abstractions
+- **GSAP** — Scroll-triggered animations
+- **Lenis** — Smooth scrolling
+- **Vite** — Build tool and dev server
 
-## React Compiler
+## Getting Started
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js 18+
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Installation
+
+```bash
+npm install
+```
+
+### Development
+
+```bash
+npm run dev
+```
+
+### Build
+
+```bash
+npm run build
+```
+
+### Preview
+
+```bash
+npm run preview
+```
+
+## Project Structure
+
+```
+src/
+├── components/
+│   └── Scene.jsx       # 3D scene with the GLB model
+├── App.jsx             # Main app layout and animations
+├── App.css             # Styles
+├── main.jsx            # Entry point
+└── index.css           # Global styles
+public/
+├── shaker.glb          # 3D monster shaker model
+└── vite.svg            # Favicon
+```
+
+## Credits
+
+- Agency: [Weabers](https://weabers.com)
+- Author: [Atihar Hossen Mahir](https://atiharhossenmahir.com)
+- Inspired by [CodeGrid](https://www.youtube.com/@codegrid)
